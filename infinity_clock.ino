@@ -159,16 +159,16 @@ void showTime() {
 
   
   
-  for (int i = 59; i >= 59 - currentTime.sec; i--) {
+  for (int i = 0; i <= currentTime.sec; i++) {
       leds[i] = CRGB::Green;
   }
 
-  for (int i = 59 - currentTime.sec - 1; i >= 0; i--) {
+  for (int i = currentTime.sec + 1; i <= 59; i++) {
       leds[i] = CRGB::Black;
   }
 
-  leds[59 - currentTime.min] = CRGB::Blue; //if overlapping, hour is shown
-  leds[59 - (currentTime.hour % 12) * 5] = CRGB::Red;
+  leds[currentTime.min] = CRGB::Blue; //if overlapping, hour is shown
+  leds[(currentTime.hour  % 12) * 5] = CRGB::Red;
 
   FastLED.show();
   
@@ -190,9 +190,6 @@ void getTimeInput() {
   }
   if (minToSet == -1)
     minToSet = hourToSet;
-
-  minToSet = 59 - minToSet;
-  hourToSet = (59 - hourToSet) / 5;
 
   rtc.setTime(hourToSet, minToSet, secToSet);
   
@@ -218,8 +215,7 @@ void getAlarmInput() {
   if (minToSet == -1)
     minToSet = hourToSet;
 
-  minToSet = 59 - minToSet;
-  hourToSet = (59 - hourToSet) / 5;
+  hourToSet = hourToSet / 5;
 
   alarm.hour = hourToSet;
   alarm.min = minToSet;
@@ -247,7 +243,6 @@ void moveClock() {
   
           if (button2State == HIGH)      
           {
-            
             moveLed();
           }
     }
@@ -287,8 +282,8 @@ void moveLed() {
   }
     
   for (int i = 0; i <= 59; i++) {
-    int nextMinLed = i - 1 == -1 ? 59 : i - 1;
-    int nextHourLed = i - 5 ==  -1 ? 59 : i - 5;
+    int nextMinLed = (i + 1) % 60;
+    int nextHourLed = (i + 5) %60;
     if (overlapping) {
       
       if (minOrHour == 0) {
